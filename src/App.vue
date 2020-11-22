@@ -1,16 +1,53 @@
 <template>
-  <div id="app">
-    <v-app id="inspire">
-      <v-card class="mx-auto overflow-hidden">
-        <!-- <div id="nav">
-        <router-link to="/">Home</router-link> |
-        <router-link to="/about">About</router-link>
-      </div> -->
-        <router-view />
-      </v-card>
-    </v-app>
-  </div>
+  <!-- App.vue -->
+
+  <v-app>
+    <v-navigation-drawer app>
+      <!-- -->
+    </v-navigation-drawer>
+
+    <!-- <v-app-bar app> -->
+      <!-- -->
+      <Navbar/>
+    <!-- </v-app-bar> -->
+
+    <!-- Sizes your content based upon application components -->
+    <v-main>
+
+      <!-- Provides the application the proper gutter -->
+      <v-container fluid>
+
+        <!-- If using vue-router -->
+        <router-view></router-view>
+      </v-container>
+    </v-main>
+
+    <v-footer app>
+      <!-- -->
+    </v-footer>
+  </v-app>
 </template>
+<script>
+// @ is an alias to /src
+import Navbar from '@/components/layout/Navbar.vue'
+
+export default {
+  name: 'App',
+  components: {
+    Navbar
+  },
+  data () {
+    return {
+      test: 'wyn'
+
+    }
+  },
+  created () {},
+  computed: {},
+  methods: {},
+  watch: {}
+}
+</script>
 
 <style lang="scss">
 #app {
