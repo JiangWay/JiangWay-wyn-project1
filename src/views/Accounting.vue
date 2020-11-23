@@ -1,12 +1,18 @@
 <template>
   <div class="about">
     <h1>This is an Accouinting page</h1>
-    <!-- 新增 -->
+    <!-- 新增 記帳資料-->
+    <Add/>
+
+    <!-- 我是分隔線 -->
+    <v-spacer></v-spacer>
+    <v-divider></v-divider>
+    <v-spacer></v-spacer>
     <!-- 顯示該月 -->
      <v-data-table
       :headers="headers"
-      :items="desserts"
-      :items-per-page="5"
+      :items="filterAccountingList"
+      :items-per-page="10"
       class="elevation-1"
     ></v-data-table>
   </div>
@@ -15,11 +21,13 @@
 // @ is an alias to /src
 // import firebase from 'firebase'
 import db from '@/firebase/init'
+import { mapState, mapMutations } from 'vuex'
+import Add from '@/components/accounting/Add.vue'
 
 export default {
   name: 'Accounting',
   components: {
-
+    Add
   },
   data () {
     return {
@@ -27,7 +35,7 @@ export default {
         {
           text: '日期',
           align: 'start',
-          sortable: false,
+          filterable: false,
           value: 'date'
         },
         { text: '主分類', value: 'mainCategory' },
@@ -36,19 +44,51 @@ export default {
         { text: '幣別', value: 'currency' },
         { text: '該幣別金額', value: 'cost' }
       ],
-      desserts: [
+      accountingList: [
 
       ]
     }
   },
   created () {
-    this.getData()
+    if (this.s_accountingList.length > 0) {
+      console.log('wyn test aaa')
+      this.accountingList = this.s_accountingList
+    } else {
+      console.log('wyn test bbb')
+      this.getData()
+    }
+    console.log(this.s_accountingList)
+    // 印出所有分類
+    // 主分類 mainCategory
+    // 子分類 subCategory
+    const mainCategory = new Set()
+    const subCategory = new Set()
+    const category = new Set()
+    this.s_accountingList.forEach(item => {
+      console.log(item)
+      category.add(item.mainCategory + '-' + item.subCategory)
+      mainCategory.add(item.mainCategory)
+      subCategory.add(item.subCategory)
+    })
+    console.log(mainCategory)
+    console.log(subCategory)
+    console.log(category)
   },
-  computed: {},
+  computed: {
+    ...mapState(['s_accountingList']),
+    filterAccountingList () {
+      const accountingListToSort = this.accountingList
+      return accountingListToSort.sort((a, b) => {
+        return Date.parse(b.date) - Date.parse(a.date)
+      })
+    }
+  },
   methods: {
+    ...mapMutations(['m_setAccountingList']),
     getData () {
       db.collection('data').get().then(snapshot => {
         snapshot.docs.forEach(doc => {
+          // console.log(doc.id)
           const data = doc.data()
           // 日期
           // 主分類 mainCategory
@@ -65,11 +105,14 @@ export default {
             currency: data.幣別,
             cost: data.該幣別金額
           }
-          this.desserts.push(dataToShow)
+          this.accountingList.push(dataToShow)
         })
       }).catch(error => {
         console.log(error)
+        this.m_setAccountingList([])
       })
+      this.m_setAccountingList(this.accountingList)
+      console.log(this.s_accountingList)
     }
   },
   watch: {}
