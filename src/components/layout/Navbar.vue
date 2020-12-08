@@ -11,12 +11,18 @@
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
 
-      <v-btn icon>
+      <!-- <v-btn icon>
         <v-icon>mdi-heart</v-icon>
-      </v-btn>
+      </v-btn> -->
 
-      <v-btn icon>
+      <!-- <v-btn icon>
         <v-icon>mdi-dots-vertical</v-icon>
+      </v-btn> -->
+      <v-btn icon @click="goTo('Login')" v-if="user === null">
+        <v-icon>mdi-login</v-icon>
+      </v-btn>
+      <v-btn icon @click="logout" v-else>
+        <v-icon>mdi-logout</v-icon>
       </v-btn>
     </v-app-bar>
 
@@ -25,17 +31,17 @@
       <v-system-bar></v-system-bar>
       <v-list>
         <!-- 頭像 -->
-        <v-list-item>
+        <!-- <v-list-item>
           <v-list-item-avatar>
             <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
           </v-list-item-avatar>
-        </v-list-item>
+        </v-list-item> -->
 
         <!-- 帳號資訊 -->
         <v-list-item link>
           <v-list-item-content>
-            <v-list-item-title class="title"> John Leider </v-list-item-title>
-            <v-list-item-subtitle>john@vuetifyjs.com</v-list-item-subtitle>
+            <v-list-item-title class="title"> {{userAlias}} </v-list-item-title>
+            <v-list-item-subtitle>{{userEmail}}</v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
             <v-icon>mdi-menu-down</v-icon>
@@ -67,7 +73,9 @@
 </template>
 
 <script>
+// import db from '@/firebase/init'
 import firebase from 'firebase'
+import { mapState, mapMutations } from 'vuex'
 
 export default {
   name: 'Navbar',
@@ -93,36 +101,69 @@ export default {
       items: [
         { text: 'Home', icon: 'mdi-folder', routerName: 'Home' },
         { text: 'About', icon: 'mdi-account-multiple', routerName: 'About' },
-        { text: 'Accounting', icon: 'mdi-star', routerName: 'Accounting' },
-        { text: 'Recent', icon: 'mdi-history' },
-        { text: 'Offline', icon: 'mdi-check-circle' },
-        { text: 'Uploads', icon: 'mdi-upload' },
-        { text: 'Backups', icon: 'mdi-cloud-upload' }
+        { text: 'Accounting', icon: 'mdi-star', routerName: 'Accounting' }
+        // { text: 'Recent', icon: 'mdi-history' },
+        // { text: 'Offline', icon: 'mdi-check-circle' },
+        // { text: 'Uploads', icon: 'mdi-upload' },
+        // { text: 'Backups', icon: 'mdi-cloud-upload' }
       ]
     }
   },
   created () {
     // let user = firebase.auth().currentUser
     firebase.auth().onAuthStateChanged((user) => {
+      console.log(user)
       if (user) {
         this.user = user
+        // db.collection('users').where('user_id', '==', user.uid).get()
+        //   .then(user => {
+        //     this.m_serUserInfo({
+        //       alias: user.alias,
+        //       email: this.email
+        //     })
+        //   })
       } else {
         this.user = null
       }
     })
+    console.log(this.user)
+  },
+  computed: {
+    ...mapState('s_userInfo'),
+    userAlias () {
+      console.log(this.s_userInfo)
+      if (this.s_userInfo && this.s_userInfo.alias) {
+        return this.s_userInfo.alias
+      } else {
+        return ''
+      }
+    },
+    userEmail () {
+      console.log(this.s_userInfo)
+      if (this.s_userInfo && this.s_userInfo.email) {
+        return this.s_userInfo.email
+      } else {
+        return ''
+      }
+    }
+
   },
   methods: {
+    ...mapMutations('m_serUserInfo'),
     logout () {
       firebase
         .auth()
         .signOut()
         .then(() => {
-          this.$router.push({ name: 'Login' })
+          this.$router.push({ name: 'Home' })
         })
     },
     goTo (routerName) {
       this.$router.push({ name: routerName })
     }
+  },
+  watch: {
+
   }
 }
 </script>
