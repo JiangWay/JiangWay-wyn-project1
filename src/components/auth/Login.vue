@@ -85,14 +85,14 @@
 <script>
 import db from '@/firebase/init'
 import firebase from 'firebase'
-import { mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 
 export default {
   name: 'Login',
   data () {
     return {
-      email: null,
-      password: null,
+      email: 'w3@gmail.com',
+      password: '123456',
       feedback: null,
       showPwd: false,
       valid: false,
@@ -103,28 +103,39 @@ export default {
       pwdRules: [
         (v) => !!v || 'Password is required',
         (v) => v.length <= 20 || 'Password must be less than 20 characters'
-      ]
+      ],
+      alias: ''
     }
   },
   computed: {
-    // ...mapState('s_userInfo')
+    ...mapState(['s_userInfo'])
   },
   methods: {
-    ...mapMutations('m_setUserInfo'),
+    ...mapMutations(['m_setUserInfo']),
     login () {
-      const self = this
+      // const self = this
       if (this.email && this.password) {
         this.feedback = null
         firebase.auth().signInWithEmailAndPassword(this.email, this.password)
           .then(auth => {
             console.log(auth)
             db.collection('users').where('user_id', '==', auth.user.uid).get()
-              .then(user => {
-                self.m_setUserInfo({
-                  alias: user.alias,
-                  email: this.email
+              .then(querySnapshot => {
+                console.log(querySnapshot)
+                querySnapshot.forEach(doc => {
+                  console.log(doc.id, ' => ', doc.data())
+                  this.alias = doc.data().alias
+                  this.m_setUserInfo({
+                    alias: this.alias,
+                    email: this.email
+                  })
                 })
+                console.log(this.s_userInfo)
+              }).catch(err => {
+                this.feedback = err.message
+                console.log(err)
               })
+
             this.$router.push({ name: 'Home' })
           }).catch(err => {
             this.feedback = err.message

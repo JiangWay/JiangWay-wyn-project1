@@ -110,6 +110,7 @@ export default {
     }
   },
   created () {
+    // console.log(this.s_userInfo)
     // let user = firebase.auth().currentUser
     firebase.auth().onAuthStateChanged((user) => {
       console.log(user)
@@ -129,7 +130,7 @@ export default {
     console.log(this.user)
   },
   computed: {
-    ...mapState('s_userInfo'),
+    ...mapState(['s_userInfo']),
     userAlias () {
       console.log(this.s_userInfo)
       if (this.s_userInfo && this.s_userInfo.alias) {
@@ -149,13 +150,18 @@ export default {
 
   },
   methods: {
-    ...mapMutations('m_serUserInfo'),
+    ...mapMutations(['m_setUserInfo']),
     logout () {
       firebase
         .auth()
         .signOut()
         .then(() => {
-          this.$router.push({ name: 'Home' })
+          this.m_setUserInfo({})
+          console.log(this.$route.name)
+          if (this.$route.name !== 'Home') {
+            console.log('loguot and go to home')
+            this.$router.push({ name: 'Home' })
+          }
         })
     },
     goTo (routerName) {

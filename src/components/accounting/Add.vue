@@ -1,4 +1,5 @@
 <template>
+<div class="add">
     <!-- 新增 記帳資料-->
       <v-card
       class="mx-auto"
@@ -8,7 +9,7 @@
       <v-list-item three-line>
         <v-list-item-content>
           <v-list-item-title class="headline mb-1">
-                 新增一筆吧！
+            新增一筆吧！
           </v-list-item-title>
           <!-- <v-list-item-subtitle>Greyhound divisely hello coldly fonwderfully</v-list-item-subtitle> -->
         </v-list-item-content>
@@ -121,6 +122,18 @@
       </v-card-actions>
     </v-card>
 
+        <!-- 新增一筆彈窗 -->
+     <v-btn
+      class="mx-2"
+      fab
+      dark
+      color="indigo"
+    >
+      <v-icon dark>
+        mdi-plus
+      </v-icon>
+    </v-btn>
+</div>
 </template>
 <script>
 // @ is an alias to /src
@@ -154,14 +167,14 @@ export default {
     // 帳務說明
     // 金額 幣別（預設台幣）
     clickToAdd () {
-      const dataToAdd = {
-        // date: data.日期,
-        // mainCategory: data.主分類,
-        // subCategory: data.子分類,
-        // detail: data.帳務說明,
-        // currency: data.幣別,
-        // cost: data.該幣別金額
-      }
+      // const dataToAdd = {
+      // date: data.日期,
+      // mainCategory: data.主分類,
+      // subCategory: data.子分類,
+      // detail: data.帳務說明,
+      // currency: data.幣別,
+      // cost: data.該幣別金額
+      // }
     }
   },
   watch: {}
